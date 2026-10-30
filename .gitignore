@@ -1,0 +1,11 @@
+# Сборки
+.build/
+build/
+*.zip
+
+# Ключ подписи проекта — только локально
+signing/*
+!signing/cert.cnf
+
+.DS_Store
+.swiftpm/
