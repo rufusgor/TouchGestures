@@ -41,7 +41,7 @@ TouchGestures читает касания напрямую с HID-дигитай
 
 ### Совместимость
 
-- macOS 14 Sonoma и новее, Apple Silicon (проверено на M-серии, macOS 27).
+- macOS 14 Sonoma и новее, Apple Silicon (проверено на M-серии, macOS 27). Готовая сборка в Releases — только для Apple Silicon; на Intel соберите из исходников (не проверялось).
 - Мониторы с HID-дигитайзером по протоколу Windows (Precision Touchscreen / Win8+). Проверено на ILITEK-TP (мониторы AQ16TH, AQ14T). Другие тачскрины с таким протоколом, скорее всего, тоже заработают.
 
 ### Установка
@@ -190,7 +190,7 @@ Also:
 
 ### Compatibility
 
-- macOS 14 Sonoma or later, Apple Silicon (tested on M-series, macOS 27).
+- macOS 14 Sonoma or later, Apple Silicon (tested on M-series, macOS 27). The prebuilt app in Releases is Apple Silicon only; on Intel, build from source (untested).
 - Monitors with a Windows-protocol HID digitizer (Precision Touchscreen / Win8+). Tested with ILITEK-TP (AQ16TH, AQ14T monitors). Other touchscreens using this protocol will most likely work too.
 
 ### Installation
