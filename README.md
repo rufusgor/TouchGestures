@@ -80,15 +80,61 @@ defaults write app.TouchGestures DebugLog -bool true
 
 ### Сборка из исходников
 
-Нужны Xcode Command Line Tools (Swift 5.9+).
+**Что нужно:** macOS 14+, Apple Silicon или Intel, Xcode или только Command Line Tools (Swift 5.9+). Проверить и установить:
 
 ```bash
-scripts/build-app.sh            # собрать build/TouchGestures.app
-scripts/build-app.sh --install  # и установить в /Applications
-swift run MultiTouchDemo        # демо-окно, показывающее распознанные жесты
+swift --version          # должен быть Swift 5.9 или новее
+xcode-select --install   # если swift не найден
 ```
 
-Подпись: скрипт использует `CODESIGN_IDENTITY`, затем собственный сертификат из `signing/` (в репозиторий не входит), затем «Apple Development» из связки ключей, иначе ad-hoc. С сертификатом macOS сохраняет выданные разрешения между пересборками, с ad-hoc — их нужно выдавать заново после каждой сборки.
+**1. Скачать исходники**
+
+```bash
+git clone https://github.com/<владелец>/TouchGestures.git
+cd TouchGestures
+```
+
+**2. Один раз — создать сертификат подписи** (рекомендуется)
+
+```bash
+scripts/make-signing-identity.sh
+```
+
+Скрипт создаёт самоподписанный сертификат в отдельной связке ключей `signing/TouchGestures-signing.keychain-db` (без пароля, ваша основная связка не затрагивается, в git не попадает). macOS привязывает разрешения «Универсальный доступ» и «Мониторинг ввода» к подписи: с этим сертификатом они сохраняются между пересборками, без него (ad-hoc) — сбрасываются после каждой сборки.
+
+**3. Собрать приложение**
+
+```bash
+scripts/build-app.sh            # → build/TouchGestures.app
+scripts/build-app.sh --install  # то же и копия в /Applications (закрывает запущенную версию)
+```
+
+Скрипт собирает release-версию (`swift build -c release --product TouchGestures`), складывает пакет `.app` с `Resources/TouchGestures-Info.plist` и подписывает. Сертификат выбирается по порядку: `CODESIGN_IDENTITY="…"` из окружения → сертификат проекта из шага 2 → «Apple Development» / «Developer ID Application» из вашей связки ключей → ad-hoc. Какой использован, скрипт пишет в конце.
+
+**4. Запустить**
+
+```bash
+open build/TouchGestures.app
+```
+
+Дальше — разрешения, как в разделе «Установка», шаг 3.
+
+**Для разработки**
+
+```bash
+swift build                     # собрать всё (отладочная версия)
+swift run MultiTouchDemo        # демо-окно: показывает, что распознано и что получает приложение
+swift run MultiTouchDemo -touchScreen 1   # демо с явным выбором экрана (индекс в списке экранов)
+```
+
+Демо запускается из терминала, поэтому разрешения нужны самому терминалу (Terminal, iTerm…).
+
+**Архив для релиза**
+
+```bash
+scripts/build-app.sh
+ditto -c -k --keepParent build/TouchGestures.app build/TouchGestures.zip
+```
 
 ### Как это устроено
 
@@ -183,15 +229,61 @@ After a restart the app writes raw touches and every recognition decision to `~/
 
 ### Building from source
 
-Requires Xcode Command Line Tools (Swift 5.9+).
+**Requirements:** macOS 14+, Apple Silicon or Intel, Xcode or just the Command Line Tools (Swift 5.9+). To check and install:
 
 ```bash
-scripts/build-app.sh            # build build/TouchGestures.app
-scripts/build-app.sh --install  # and install to /Applications
-swift run MultiTouchDemo        # demo window showing recognized gestures
+swift --version          # must be Swift 5.9 or later
+xcode-select --install   # if swift is not found
 ```
 
-Signing: the script uses `CODESIGN_IDENTITY`, then the project's own certificate from `signing/` (not included in the repository), then an "Apple Development" identity from the keychain, otherwise ad-hoc. With a certificate macOS keeps granted permissions across rebuilds; with ad-hoc they have to be granted again after every build.
+**1. Get the source**
+
+```bash
+git clone https://github.com/<owner>/TouchGestures.git
+cd TouchGestures
+```
+
+**2. Once — create a signing certificate** (recommended)
+
+```bash
+scripts/make-signing-identity.sh
+```
+
+The script creates a self-signed certificate in a separate keychain `signing/TouchGestures-signing.keychain-db` (no password, your login keychain is untouched, not committed to git). macOS ties the Accessibility and Input Monitoring permissions to the code signature: with this certificate they survive rebuilds; without it (ad-hoc) they are reset after every build.
+
+**3. Build the app**
+
+```bash
+scripts/build-app.sh            # → build/TouchGestures.app
+scripts/build-app.sh --install  # same, plus a copy in /Applications (quits the running version)
+```
+
+The script builds the release configuration (`swift build -c release --product TouchGestures`), assembles the `.app` bundle with `Resources/TouchGestures-Info.plist` and signs it. The certificate is chosen in this order: `CODESIGN_IDENTITY="…"` from the environment → the project certificate from step 2 → "Apple Development" / "Developer ID Application" from your keychain → ad-hoc. The script prints which one was used.
+
+**4. Run**
+
+```bash
+open build/TouchGestures.app
+```
+
+Then grant permissions as in Installation, step 3.
+
+**For development**
+
+```bash
+swift build                     # build everything (debug)
+swift run MultiTouchDemo        # demo window: shows what is recognized and what the app receives
+swift run MultiTouchDemo -touchScreen 1   # demo with an explicit display (index in the screen list)
+```
+
+The demo runs from a terminal, so the permissions are needed by the terminal app itself (Terminal, iTerm…).
+
+**Release archive**
+
+```bash
+scripts/build-app.sh
+ditto -c -k --keepParent build/TouchGestures.app build/TouchGestures.zip
+```
 
 ### How it works
 
