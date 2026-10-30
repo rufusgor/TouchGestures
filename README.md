@@ -90,7 +90,7 @@ xcode-select --install   # если swift не найден
 **1. Скачать исходники**
 
 ```bash
-git clone https://github.com/<владелец>/TouchGestures.git
+git clone https://github.com/rufusgor/TouchGestures.git
 cd TouchGestures
 ```
 
@@ -239,7 +239,7 @@ xcode-select --install   # if swift is not found
 **1. Get the source**
 
 ```bash
-git clone https://github.com/<owner>/TouchGestures.git
+git clone https://github.com/rufusgor/TouchGestures.git
 cd TouchGestures
 ```
 
